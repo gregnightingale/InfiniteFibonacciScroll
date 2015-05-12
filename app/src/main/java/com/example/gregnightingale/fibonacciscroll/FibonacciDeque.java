@@ -1,8 +1,5 @@
 package com.example.gregnightingale.fibonacciscroll;
 
-import android.os.Looper;
-import android.util.Log;
-
 import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.Iterator;
@@ -11,42 +8,54 @@ import java.util.Iterator;
  * Created by gregnightingale on 5/7/15.
  */
 public class FibonacciDeque extends ArrayDeque<FibonacciItem> {
+
     public FibonacciDeque(int numElements) {
         super(numElements);
+        // initialize the Fibonacci Series
         BigInteger nMinus2 = BigInteger.ZERO;
         BigInteger nMinus1 = BigInteger.ONE;
         this.add(new FibonacciItem(0, BigInteger.ZERO));
         this.add(new FibonacciItem(1, BigInteger.ONE));
-        for (int i=2; i<=numElements; i++) {
+        for (int i = 2; i <= numElements; i++) {
             BigInteger next = nMinus2.add(nMinus1);
             this.add(new FibonacciItem(i, next));
             nMinus2 = nMinus1;
             nMinus1 = next;
         }
-//        Log.d("FibonacciDeque", this.toString());
     }
+
     public void slide(int delta) {
 
-//        if (Looper.myLooper() == Looper.getMainLooper()) {
-//            Log.d("FibonacciDeque", "is on UI Thread");
-//        } else {
-//            Log.d("FibonacciDeque", "is NOT on UI Thread");
-//        };
-
-        if (delta==0) return;
-        if (delta>0) {
-            for (int i=0; i<delta; i++) {
+        if (delta == 0) return;
+        if (delta > 0) {
+            for (int i = 0; i < delta; i++) {
                 this.removeFirst();
                 this.addLast(nextHigherFib());
-//                Log.d("FibonacciDeque:Up", this.toString());
             }
-        } else if (delta<0) {
-            for (int i=0; i>delta; i--) {
+        } else if (delta < 0) {
+            for (int i = 0; i > delta; i--) {
                 this.removeLast();
                 this.addFirst(nextLowerFib());
-//                Log.d("FibonacciDeque:Dn", this.toString());
             }
         }
+    }
+
+    /**
+     * find the nth Fibonacci Number in the deque
+     * @param n
+     * @return null if not found
+     */
+    public FibonacciItem get(int n) throws IndexOutOfBoundsException {
+        int i = 0;
+        for (Iterator<FibonacciItem> iter = this.iterator(); iter.hasNext(); i++) {
+            FibonacciItem fibItem = iter.next();
+            BigInteger fN = fibItem.getFn();
+            int chkN = fibItem.getN();
+            if (chkN == n) {
+                return fibItem;
+            }
+        }
+        throw new IndexOutOfBoundsException("requested index not within current Deque!");
     }
 
     private FibonacciItem nextHigherFib() {
@@ -56,7 +65,7 @@ public class FibonacciDeque extends ArrayDeque<FibonacciItem> {
         int n = item.getN();
         item = iterator.next();
         BigInteger fnMinus2 = item.getFn();
-        FibonacciItem result = new FibonacciItem(n+1, fnMinus1.add(fnMinus2));
+        FibonacciItem result = new FibonacciItem(n + 1, fnMinus1.add(fnMinus2));
         return result;
     }
 
@@ -67,7 +76,7 @@ public class FibonacciDeque extends ArrayDeque<FibonacciItem> {
         int n = item.getN();
         item = iterator.next();
         BigInteger nPlus1 = item.getFn();
-        FibonacciItem result = new FibonacciItem(n-1, nPlus1.subtract(fn));
+        FibonacciItem result = new FibonacciItem(n - 1, nPlus1.subtract(fn));
         return result;
     }
 
